@@ -8,6 +8,7 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
+    "deploy:ci": "node deploy.js",
     "logs": "firebase functions:log",
     "test": "node --require ts-node/register \"./src/tests/index.ts\""
   },
