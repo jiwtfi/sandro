@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useRef } from 'react';
+import React, { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,8 +18,6 @@ import { auth } from '../firebase';
 import { selectHasUnsavedChanges, setHasUnsavedChanges } from '../reducers/uiSlice';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { discardUnsavedChangeConfirmationText } from '../utils/messages';
-import SearchAutocomplete, { SearchAutocompleteProps } from './SearchAutocomplete';
-import { setSearchResults } from '../reducers/searchSlice';
 
 interface NavBarButtonProps extends ButtonProps {
   title: string

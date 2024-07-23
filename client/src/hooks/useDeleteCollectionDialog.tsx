@@ -11,7 +11,7 @@ interface DeleteCollectionDialogProps {
 
 const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ collection, setCollection }) => {
   const navigate = useNavigate();
-  const [deleteCollection, { isLoading }] = useDeleteCollectionMutation();
+  const [deleteCollection] = useDeleteCollectionMutation();
 
   const handleDelete = async () => {
     if (collection) {

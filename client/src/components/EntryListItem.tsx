@@ -10,7 +10,7 @@ import { Entry, WithId } from '../types';
 import { actionButtonBaseStyles, DeleteButton, EditButton } from './ActionButtons';
 import { sliceExampleText } from '../utils/exampleText';
 import SelectPriority from './SelectPriority';
-import { useListEntriesQuery, useUpdateEntryMutation } from '../api';
+import { useUpdateEntryMutation } from '../api';
 import ActionButtonsContainer from './ActionButtonsContainer';
 import { useDeleteEntryDialog } from '../hooks/useDeleteEntryDialog';
 
@@ -22,7 +22,7 @@ const EntryListItem: React.FC<EntryListItemProps> = ({ entry }) => {
   const navigate = useNavigate();
   const { collectionId } = useParams() as { collectionId: string; };
   const isMd = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
-  const [updateEntry, { isError: isUpdateEntryError }] = useUpdateEntryMutation();
+  const [updateEntry] = useUpdateEntryMutation();
   const { Dialog: DeleteEntryDialog, setEntry: setEntryToBeDeleted } = useDeleteEntryDialog({ collectionId });
 
   const handlePriorityChange = async (value: number) => {

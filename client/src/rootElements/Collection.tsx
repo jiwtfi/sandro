@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -12,10 +11,11 @@ const Collection = () => {
   if (!collectionId) throw new Error();
   const {
     isLoading: isRetrieveCollectionLoading,
-    error: retrieveCollectionError } = useRetrieveCollectionQuery({ collectionId });
+    // error: retrieveCollectionError
+  } = useRetrieveCollectionQuery({ collectionId });
   const {
     isLoading: isListEntriesLoading,
-    error: listEntriesError
+    // error: listEntriesError
   } = useListEntriesQuery({ collectionId });
 
 

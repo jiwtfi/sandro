@@ -7,7 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Theme } from '@mui/material/styles';
 import EntryList from '../components/EntryList';
 import ActionButtonsContainer from '../components/ActionButtonsContainer';
-import { actionButtonBaseStyles, AddButton, DeleteButton, FlashcardsButton, GameButton, SearchButton } from '../components/ActionButtons';
+import { actionButtonBaseStyles, AddButton, FlashcardsButton, GameButton, SearchButton } from '../components/ActionButtons';
 import SearchField from '../components/SearchField';
 
 const ViewCollection = () => {

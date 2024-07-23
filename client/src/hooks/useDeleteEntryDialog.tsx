@@ -12,12 +12,10 @@ interface DeleteEntryDialogProps {
 
 const DeleteEntryDialog: React.FC<DeleteEntryDialogProps> = ({ collectionId, entry, setEntry }) => {
   const navigate = useNavigate();
-  // const [deleteCollection, { isLoading }] = useDeleteCollectionMutation();
-  const [deleteEntry, { isLoading }] = useDeleteEntryMutation();
+  const [deleteEntry] = useDeleteEntryMutation();
 
   const handleDelete = async () => {
     if (entry) {
-      // await deleteCollection({ collectionId: entry.id });
       await deleteEntry({ collectionId, entryId: entry.id });
       setEntry(null);
       navigate(`/collections/${collectionId}/view`);

@@ -22,11 +22,11 @@ import {
   selectIsComplete,
   selectIsGameLoaded,
   selectLetters,
-  selectPreferences,
+  // selectPreferences,
   setIsComplete,
 } from '../reducers/gameSlice';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { AudioButton, CancelButton, MuteButton, PreferencesButton } from '../components/ActionButtons';
+import { AudioButton, CancelButton, MuteButton } from '../components/ActionButtons';
 import { selectSoundAutoplay, setSoundAutoplay } from '../reducers/uiSlice';
 
 const Game = () => {
@@ -39,7 +39,7 @@ const Game = () => {
   const letters = useAppSelector(selectLetters);
   const isComplete = useAppSelector(selectIsComplete);
   const exampleLength = useAppSelector(selectExampleLength);
-  const preferences = useAppSelector(selectPreferences);
+  // const preferences = useAppSelector(selectPreferences);
   const soundAutoPlay = useAppSelector(selectSoundAutoplay);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>(Array(4).fill(null));
