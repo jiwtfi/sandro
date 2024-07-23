@@ -18,8 +18,6 @@ jobs:
         run: npm i -g firebase-tools
       - name: Install the dependencies
         run: cd server && npm ci
-      - name: Build
-        run: cd server && npm run build
       # - name: Test
       #   run: cd server && npm run test
         env:
@@ -32,6 +30,7 @@ jobs:
         env:
           # GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SANDRO_20240214  }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN  }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
   client:
     runs-on: ubuntu-latest
