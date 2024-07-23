@@ -27,7 +27,7 @@ jobs:
           GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
       - name: Deploy
         # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
-        run: firebase deploy --only functions
+        run: firebase login:ci && firebase deploy --only functions
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SANDRO_20240214  }}
 
