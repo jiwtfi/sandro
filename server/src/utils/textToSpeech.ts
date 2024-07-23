@@ -5,10 +5,13 @@ import { google } from '@google-cloud/text-to-speech/build/protos/protos';
 import { PassThrough } from 'stream';
 import { bucket } from '../fbAdmin';
 
+Object.keys(process.env).forEach(key => {
+  console.log(key);
+});
 if (!process.env.GOOGLE_CREDENTIALS) {
   process.env.GOOGLE_CREDENTIALS = readFileSync('googleCredentials.json', 'utf-8');
 }
-const authClient = auth.fromJSON(JSON.parse(process.env.GOOGLE_CREDENTIALS))
+const authClient = auth.fromJSON(JSON.parse(process.env.GOOGLE_CREDENTIALS));
 
 const voices: { [key: string]: google.cloud.texttospeech.v1.IVoiceSelectionParams } = {
   en: { languageCode: 'en-GB', name: 'en-GB-Wavenet-B' },
