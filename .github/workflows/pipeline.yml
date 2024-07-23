@@ -6,9 +6,14 @@ on:
   # pull_request:
   #   branches: [main]
   #   types: [opened, synchronize]
+
 jobs:
   server:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN  }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,18 +23,14 @@ jobs:
         run: npm i -g firebase-tools
       - name: Install the dependencies
         run: cd server && npm ci
-      # - name: Test
-      #   run: cd server && npm run test
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
+      - name: Test
+        run: cd server && npm run test
+        # env:
+        #   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        #   GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
       - name: Deploy
         # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         run: firebase deploy --only functions
-        env:
-          # GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SANDRO_20240214  }}
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN  }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
   client:
     runs-on: ubuntu-latest

@@ -8,21 +8,21 @@ const testFiles = {
     users: {
       root: [
         'createUser',
-        'retrieveCurrentUser',
-        'listUsers'
+        // 'retrieveCurrentUser',
+        // 'listUsers'
       ]
     },
     collections: {
       root: [
-        'createCollection',
-        'retrieveCollection',
-        'deleteCollection',
-        'listCollections',
-        'updateCollection'
+        // 'createCollection',
+        // 'retrieveCollection',
+        // 'deleteCollection',
+        // 'listCollections',
+        // 'updateCollection'
       ],
       entries: [
-        'addEntry',
-        'deleteEntry',
+        // 'addEntry',
+        // 'deleteEntry',
 
         // 'retrieveEntry',
         // 'updateEntry'

@@ -5,9 +5,6 @@ import { google } from '@google-cloud/text-to-speech/build/protos/protos';
 import { PassThrough } from 'stream';
 import { bucket } from '../fbAdmin';
 
-Object.keys(process.env).forEach(key => {
-  console.log(key);
-});
 if (!process.env.GOOGLE_CREDENTIALS) {
   process.env.GOOGLE_CREDENTIALS = readFileSync('googleCredentials.json', 'utf-8');
 }
