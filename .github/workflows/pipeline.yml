@@ -16,14 +16,14 @@ jobs:
           node-version: "20"
       - name: Install Firebase CLI
         run: npm i -g firebase-tools
-      - name: Set the working directory
-        run: cd server
+      # - name: Set the working directory
+      #   run: cd server
       - name: Install the dependencies
-        run: npm ci
+        run: cd server && npm ci
       - name: Build
-        run: npm run build
+        run: cd server && npm run build
       - name: Test
-        run: npm run test
+        run: cd server && npm run test
       - name: Deploy
         if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         run: firebase deploy --only functions
@@ -35,10 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+      # - name: Set the working directory
+      #   run: cd server
       - name: Install the dependencies
-        run: npm ci
+        run: cd client && npm ci
       - name: Build
-        run: npm run build
+        run: cd client && npm run build
       - name: Deploy
         if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         uses: FirebaseExtended/action-hosting-deploy@v0
