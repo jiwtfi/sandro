@@ -18,6 +18,8 @@ jobs:
         run: npm i -g firebase-tools
       - name: Install the dependencies
         run: cd server && npm ci
+      - name: Build
+        run: cd server && npm run build
       # - name: Test
       #   run: cd server && npm run test
         env:

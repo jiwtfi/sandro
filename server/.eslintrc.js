@@ -18,7 +18,6 @@ module.exports = {
   },
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.
-    'deploy.js'
   ],
   plugins: [
     '@typescript-eslint',
