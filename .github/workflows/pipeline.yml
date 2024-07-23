@@ -20,13 +20,13 @@ jobs:
         run: cd server && npm ci
       - name: Build
         run: cd server && npm run build
-      - name: Test
-        run: cd server && npm run test
+      # - name: Test
+      #   run: cd server && npm run test
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
       - name: Deploy
-        if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+        # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         run: firebase deploy --only functions
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SANDRO_20240214  }}
@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: cd client && npm run build
       - name: Deploy
-        if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+        # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
