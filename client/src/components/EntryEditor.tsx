@@ -204,11 +204,13 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
 
   const updateExample = () => {
     if (exampleDraft.error) return;
+    const { text, occurrences } = parseExampleOccurrences(exampleDraft.value);
     setExamples([
       ...examples.slice(0, exampleDraftIndex),
       {
         ...examples[exampleDraftIndex],
-        ...parseExampleOccurrences(exampleDraft.value),
+        audioUrl: text === examples[exampleDraftIndex].text ? examples[exampleDraftIndex].audioUrl : undefined,
+        text, occurrences,
         lang: termLang
       },
       ...examples.slice(exampleDraftIndex + 1)
@@ -243,7 +245,6 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
       });
       setFeedbackMessage('Entry updated');
     }
-    // refetch();
   };
 
   return (
