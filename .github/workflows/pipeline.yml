@@ -3,9 +3,9 @@ on:
   push:
     branches:
       - main
-  # pull_request:
-  #   branches: [main]
-  #   types: [opened, synchronize]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
   server:
@@ -25,11 +25,8 @@ jobs:
         run: cd server && npm ci
       - name: Test
         run: cd server && npm run test
-        # env:
-        #   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        #   GOOGLE_CREDENTIALS_TEST: ${{ secrets.GOOGLE_CREDENTIALS_TEST }}
       - name: Deploy
-        # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         run: firebase deploy --only functions
 
   client:
@@ -42,7 +39,7 @@ jobs:
       - name: Build
         run: cd client && npm run build
       - name: Deploy
-        # if: ${{ github.event.name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

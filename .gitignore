@@ -129,6 +129,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+.firebase
+.vscode
 googleCredentials.json
 firebase_emulators_data
 sandro-20240214-test-firebase-adminsdk-21li5-55df27fa3b.json
