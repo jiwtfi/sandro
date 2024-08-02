@@ -8,7 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Theme } from '@mui/material/styles';
 import { Entry, WithId } from '../types';
 import { actionButtonBaseStyles, DeleteButton, EditButton } from './ActionButtons';
-import { sliceExampleText } from '../utils/exampleText';
+import { sliceExampleText } from '../utils/example';
 import SelectPriority from './SelectPriority';
 import { useUpdateEntryMutation } from '../api';
 import ActionButtonsContainer from './ActionButtonsContainer';

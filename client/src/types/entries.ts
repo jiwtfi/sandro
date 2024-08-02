@@ -35,6 +35,11 @@ export type Entry = {
   priority: number;
 };
 
+export type TermExample = Omit<Entry, 'examples'> & {
+  example: Example
+  exampleIndex: number;
+};
+
 export interface NewEntryParams extends Omit<Entry, 'index'> { }
 export interface AddEntryRequestTermParams extends Optional<Term, 'audioUrl'> { }
 export interface AddEntryRequestExampleParams extends Optional<Example, 'audioUrl' | 'imageUrls' | 'notes'> { }

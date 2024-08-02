@@ -1,5 +1,3 @@
-import { DocumentReference } from 'firebase-admin/firestore';
-import { Collection, SerializedCollection } from './collections';
 import { Optional, WithId } from './utils';
 
 export type User = {

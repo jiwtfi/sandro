@@ -43,6 +43,7 @@ const ListCollections = () => {
               <CardActions>
                 <FlashcardsButton
                   sx={actionButtonBaseStyles}
+                  onClick={() => navigate(`/collections/${collection.id}/flashcards`)}
                 />
                 <GameButton
                   sx={actionButtonBaseStyles}

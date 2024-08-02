@@ -11,6 +11,7 @@ import ViewCollection from './pages/ViewCollection';
 import ListCollections from './pages/ListCollections';
 import EditEntry from './pages/EditEntry';
 import Game from './pages/Game';
+import Flashcards from './pages/Flashcards';
 
 export const router = createBrowserRouter([
   {
@@ -43,7 +44,8 @@ export const router = createBrowserRouter([
                   }
                 ]
               },
-              { path: 'game', element: <Game /> }
+              { path: 'game', element: <Game /> },
+              { path: 'flashcards', element: <Flashcards /> }
             ]
           },
           {

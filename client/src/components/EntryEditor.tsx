@@ -15,7 +15,7 @@ import { AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Ex
 import TextField from '../components/TextField';
 import { useTextField } from '../hooks/useTextField';
 import { AddButton, CancelButton, DeleteButton, EditButton, SaveButton } from '../components/ActionButtons';
-import { parseExampleOccurrences, sliceExampleText, stringifyExampleText } from '../utils/exampleText';
+import { parseExampleOccurrences, sliceExampleText, stringifyExampleText } from '../utils/example';
 import { languages } from '../config';
 import { validateDefinitionText, validateExampleTextStringInput, validateTermText } from '../utils';
 import IconButton from '../components/IconButton';
