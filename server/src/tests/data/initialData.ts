@@ -54,8 +54,6 @@ export const initialCollections: (Omit<WithId<Collection>, 'createdBy'> & { entr
               occurrences: [
                 { start: 40, end: 47 }
               ],
-              notes: 'Our students\' pride in their school is very deep',
-              imageUrls: [],
               audioUrl: 'https://storage.googleapis.com/sandro-20240214.appspot.com/audio%2Fb4E8Op4EC9CtzrBEatj6%2F2MZFCj6ieVUzOJkLuGxy_example_0.mp3'
             },
             {
@@ -64,12 +62,9 @@ export const initialCollections: (Omit<WithId<Collection>, 'createdBy'> & { entr
               occurrences: [
                 { start: 31, end: 38 }
               ],
-              notes: '',
-              imageUrls: [],
               audioUrl: 'https://storage.googleapis.com/sandro-20240214.appspot.com/audio%2Fb4E8Op4EC9CtzrBEatj6%2F2MZFCj6ieVUzOJkLuGxy_example_1.mp3'
             }
           ],
-          imageUrls: [],
           priority: 5
         },
         {
@@ -88,12 +83,9 @@ export const initialCollections: (Omit<WithId<Collection>, 'createdBy'> & { entr
               occurrences: [
                 { start: 0, end: 7 }
               ],
-              notes: 'The surface of the statue is now brown, while it used to be green',
-              imageUrls: [],
               audioUrl: 'https://storage.googleapis.com/sandro-20240214.appspot.com/audio%2FVYOVyikKYJqVdfr3AKlm%2FtL1QL0wCXWb6Mnja5dRR_example_0.mp3'
             }
           ],
-          imageUrls: [],
           priority: 3
         },
         {
@@ -112,12 +104,9 @@ export const initialCollections: (Omit<WithId<Collection>, 'createdBy'> & { entr
               occurrences: [
                 { start: 13, end: 21 }
               ],
-              notes: 'The sunlight dazzled her eyes',
-              imageUrls: [],
               audioUrl: 'https://storage.googleapis.com/sandro-20240214.appspot.com/audio%2Fb4E8Op4EC9CtzrBEatj6%2F6lTPSZnw6nseibVCKGJ5_example_0.mp3'
             }
           ],
-          imageUrls: [],
           priority: 4
         }
       ]

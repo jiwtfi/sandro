@@ -92,6 +92,11 @@ export const validateAudioUrl: Validator<string> = (text, errorParams?: Validati
   return validateUrl(text, errParams);
 };
 
+export const validateImageUrl: Validator<string> = (text, errorParams?: ValidationErrorParams) => {
+  const errParams = errorParams ?? { field: 'imageUrl', message: 'The image URL is invalid' };
+  return validateUrl(text, errParams);
+};
+
 export const validateTerm: Validator<AddEntryRequestTermParams> = (params) => {
   const textErrorParams = { field: 'term.text', message: 'The term text is invalid' };
   const langErrorParams = { field: 'term.lang', message: 'The term language is invalid' };
@@ -161,6 +166,8 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
   const getOccurrencesErrorParams = (i: number) => ({ field: `examples[${i}].occurrences`, message: 'The example occurrences are invalid' });
   const getOccurrenceErrorParams = (i: number, j: number) => ({ field: `examples[${i}].occurrences[${j}]`, message: 'The example occurrence is invalid' });
   const getAudioUrlErrorParams = (i: number) => ({ field: `examples[${i}].audioUrl`, message: 'The example audio URL is invalid' });
+  const getImageUrlsErrorParams = (i: number) => ({ field: `examples[${i}].imageUrls`, message: 'The example image URLs are invalid' });
+  const getImageUrlErrorParams = (i: number, j: number) => ({ field: `examples[${i}].imageUrls[${j}]`, message: 'The example image URL is invalid' });
 
   const errors: ValidationErrorParams[] = [];
   const examples: AddEntryRequestExampleParams[] = [];

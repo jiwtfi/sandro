@@ -2,7 +2,7 @@ import { Request, Router } from 'express';
 import { FirebaseError } from 'firebase-admin';
 import { auth } from '../../fbAdmin';
 import { userService } from '../../services';
-import { CreateUserRequestBody, NewUserParams, WithId } from '../../types';
+import { CreateUserRequestBody } from '../../types';
 import { BadRequestError, RequestValidationError, ValidationErrorParams } from '../../errors';
 import { validateBio, validateEmail, validateImageUrl, validateUsername, validateId, catchValidationError } from '../../utils';
 
