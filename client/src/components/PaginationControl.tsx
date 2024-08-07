@@ -7,11 +7,12 @@ import IconButton from '../components/IconButton';
 interface PaginationControlProps {
   onBack?: React.MouseEventHandler<HTMLButtonElement>;
   onForward?: React.MouseEventHandler<HTMLButtonElement>;
-  currentIndex: number;
+  currentIndex: number | string;
   totalCount: number;
+  actions?: JSX.Element;
 }
 
-const PaginationControl: React.FC<PaginationControlProps> = ({ onBack, onForward, currentIndex, totalCount }) => {
+const PaginationControl: React.FC<PaginationControlProps> = ({ onBack, onForward, currentIndex, totalCount, actions }) => {
   return (
     <Stack
       direction="row"
@@ -25,10 +26,16 @@ const PaginationControl: React.FC<PaginationControlProps> = ({ onBack, onForward
       >
         <ArrowBackIcon />
       </IconButton>
-      <Typography>
-        {currentIndex} / {totalCount}
-      </Typography>
-
+      <Stack direction="row" alignItems="center" spacing={3} flex={1} justifyContent="center">
+        <Typography>
+          {currentIndex} / {totalCount}
+        </Typography>
+        {actions ? (
+          <Stack direction="row" alignItems="center" spacing={1} justifyContent="center">
+            {actions}
+          </Stack>
+        ) : null}
+      </Stack>
       <IconButton
         disabled={!onForward}
         onClick={onForward}

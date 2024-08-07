@@ -14,9 +14,7 @@ export const examplesResolver = (collectionId: string, entryId: string, examples
     const audioPath = `${collectionId}/${entryId}_example_${i}`;
     return {
       ...example,
-      audioUrl: example.audioUrl ?? await getAudioUrl(example.text, example.lang, audioPath),
-      imageUrls: example.imageUrls ?? [],
-      notes: example.notes ?? ''
+      audioUrl: example.audioUrl ?? await getAudioUrl(example.text, example.lang, audioPath)
     };
   }))
 );

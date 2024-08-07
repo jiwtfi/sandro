@@ -1,5 +1,5 @@
 import { isEmail, isLength, isURL } from 'validator';
-import { AddEntryRequestBody, AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Example } from '../types';
+import { AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Example } from '../types';
 import { PaginationParams } from '../types/pagination';
 import { ValidationError, ValidationErrorParams } from '../errors/ValidationError';
 
@@ -92,11 +92,6 @@ export const validateAudioUrl: Validator<string> = (text, errorParams?: Validati
   return validateUrl(text, errParams);
 };
 
-export const validateImageUrl: Validator<string> = (text, errorParams?: ValidationErrorParams) => {
-  const errParams = errorParams ?? { field: 'imageUrl', message: 'The image URL is invalid' };
-  return validateUrl(text, errParams);
-};
-
 export const validateTerm: Validator<AddEntryRequestTermParams> = (params) => {
   const textErrorParams = { field: 'term.text', message: 'The term text is invalid' };
   const langErrorParams = { field: 'term.lang', message: 'The term language is invalid' };
@@ -166,8 +161,6 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
   const getOccurrencesErrorParams = (i: number) => ({ field: `examples[${i}].occurrences`, message: 'The example occurrences are invalid' });
   const getOccurrenceErrorParams = (i: number, j: number) => ({ field: `examples[${i}].occurrences[${j}]`, message: 'The example occurrence is invalid' });
   const getAudioUrlErrorParams = (i: number) => ({ field: `examples[${i}].audioUrl`, message: 'The example audio URL is invalid' });
-  const getImageUrlsErrorParams = (i: number) => ({ field: `examples[${i}].imageUrls`, message: 'The example image URLs are invalid' });
-  const getImageUrlErrorParams = (i: number, j: number) => ({ field: `examples[${i}].imageUrls[${j}]`, message: 'The example image URL is invalid' });
 
   const errors: ValidationErrorParams[] = [];
   const examples: AddEntryRequestExampleParams[] = [];
@@ -211,16 +204,6 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
             catchValidationError(err, errors);
           }
         }
-
-        if (params[i].imageUrls) {
-          try {
-            example.imageUrls = validateImageUrls(params[i].imageUrls, getImageUrlsErrorParams(i), (j: number) => getImageUrlErrorParams(i, j));
-          } catch (err) {
-            catchValidationError(err, errors);
-          }
-        }
-
-        if (params[i].notes) example.notes = params[i].notes;
       }
 
       examples.push(example as Example);
@@ -230,29 +213,6 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
   if (errors.length > 0) throw new ValidationError(errors);
   return examples;
 
-};
-
-
-export const validateImageUrls: Validator<string[]> = (params, imageUrlsErrorParams?: ValidationErrorParams, getImageUrlErrorParams?: (i: number) => ValidationErrorParams) => {
-  const imageUrlsErrParams = imageUrlsErrorParams ?? { field: 'imageUrls', message: 'The image URLs are invalid' };
-  const getImageUrlErrParams = getImageUrlErrorParams ? getImageUrlErrorParams : (i: number) => ({ field: `imageUrls[${i}]`, message: 'The image URL is invalid' });
-  const errors: ValidationErrorParams[] = [];
-  const imageUrls: string[] = [];
-
-  if (!Array.isArray(params)) errors.push(imageUrlsErrParams);
-  else {
-    for (let i = 0; i < params.length; i++) {
-      try {
-        const imageUrl = validateImageUrl(params[i], getImageUrlErrParams(i));
-        imageUrls.push(imageUrl);
-      } catch (err) {
-        catchValidationError(err, errors);
-      }
-    }
-  }
-
-  if (errors.length > 0) throw new ValidationError(errors);
-  return imageUrls;
 };
 
 export const validatePriority: Validator<number> = (num) => {

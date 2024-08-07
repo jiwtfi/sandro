@@ -10,8 +10,7 @@ export const testEntries: AddEntryRequestBody[][][] = [
           {
             text: 'Lempeys leviää kuin metsäpalo',
             lang: 'fi',
-            occurrences: [{ start: 0, end: 7 }],
-            notes: 'Kindness spreads like wildfire'
+            occurrences: [{ start: 0, end: 7 }]
           }
         ],
         priority: 3

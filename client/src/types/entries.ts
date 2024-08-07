@@ -16,8 +16,6 @@ export type Example = {
   text: string;
   lang: string;
   audioUrl: string;
-  imageUrls: string[];
-  notes: string;
   occurrences: Occurrence[];
 };
 
@@ -31,7 +29,6 @@ export type Entry = {
   term: Term;
   definition: Definition;
   examples: Example[];
-  imageUrls: string[];
   priority: number;
 };
 
@@ -42,8 +39,8 @@ export type TermExample = Omit<Entry, 'examples'> & {
 
 export interface NewEntryParams extends Omit<Entry, 'index'> { }
 export interface AddEntryRequestTermParams extends Optional<Term, 'audioUrl'> { }
-export interface AddEntryRequestExampleParams extends Optional<Example, 'audioUrl' | 'imageUrls' | 'notes'> { }
-export interface AddEntryRequestBody extends Optional<Omit<NewEntryParams, 'term' | 'examples'>, 'imageUrls' | 'priority'> {
+export interface AddEntryRequestExampleParams extends Optional<Example, 'audioUrl'> { }
+export interface AddEntryRequestBody extends Optional<Omit<NewEntryParams, 'term' | 'examples'>, 'priority'> {
   term: AddEntryRequestTermParams;
   examples?: AddEntryRequestExampleParams[];
 }

@@ -37,7 +37,7 @@ export const useTextField = (params?: UseTextFieldParams) => {
 
   const onBlur: TextFieldProps['onBlur'] = () => {
     if (isTouched) setDisplayError(true);
-    sanitize()
+    sanitize();
   };
 
   const clear = () => {
@@ -55,65 +55,6 @@ export const useTextField = (params?: UseTextFieldParams) => {
     isValid, isTouched, setValue, isEmpty, clear
   }
 };
-
-
-// const filledArray = <T extends any>(value: T, count: number) => Array(count).fill(value);
-// const arraySetState = <T extends any>(setState: React.Dispatch<React.SetStateAction<T[]>>, value: T, index: number) => {
-//   setState(state => ([...state.slice(0, index), value, ...state.slice(index)]));
-// };
-
-// export const useTextFields = (params?: UseTextFieldsParams) => {
-//   const defaultCount = params?.count ?? params?.defaultValue?.length ?? 1;
-//   const defaultValues = params?.defaultValues?.map(v => v ?? '')
-//     ?? filledArray(params?.defaultValue ?? '', defaultCount);
-//   const validators: (((value: string) => string | null))[] = params?.validator ? filledArray(params.validator, defaultCount) : filledArray(() => null, defaultCount);
-//   const [values, setValues] = useState(defaultValues);
-//   const [isTouched, setIsTouched] = useState(filledArray(false, defaultCount));
-//   const [displayError, setDisplayError] = useState(filledArray(false, defaultCount));
-//   const isEmpty = values.map(v => v.length === 0);
-//   const errors = params?.errors ?? (values.map((v, i) => validators[i](v)));
-//   const isValid = errors.map(err => !err);
-//   const sanitize = (index: number) => arraySetState(setValues, (params?.sanitizer ? params.sanitizer(values[index], index) : defaultSanitizer(values[index])), index);
-
-
-//   const onChange: TextFieldProps['onChange'][] = values.map((v, i) => (
-//     event => {
-//       if (!isTouched[i]) setIsTouched([...isTouched.slice(0, i), true,]);
-//       arraySetState(setValues, event.target.value, i);
-//     }
-//   ));
-
-//   const onBlur: TextFieldProps['onBlur'][] = values.map((v, i) => (
-//     event => {
-//       if (isTouched[i]) arraySetState(setDisplayError, true, i);
-//       sanitize(i);
-//     }
-//   ));
-
-//   const clear = (index: number) => {
-//     arraySetState(setValues, '', index);
-//     arraySetState(setIsTouched, false, index);
-//     arraySetState(setDisplayError, false, index);
-//   };
-
-//   const clearAll = () => {
-//     setValues(['']);
-//     setIsTouched([false]);
-//     setDisplayError([false]);
-//   };
-//   const add = () => { };
-//   const remove = () => { };
-
-//   return {
-//     fieldProps: {
-//       value, onChange, onBlur,
-//       error: displayError && !!error,
-//       helperText: displayError ? error : undefined,
-//     },
-//     isValid, isTouched, setValue, isEmpty, clear
-//   }
-// };
-
 
 export const useUsernameField = ({ listUserQuery: [listUser, { isError }], ...params }: UseUsernameFieldParams) => {
   const { fieldProps: {

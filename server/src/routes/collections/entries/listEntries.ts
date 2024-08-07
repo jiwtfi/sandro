@@ -22,7 +22,6 @@ const validate = ({ offset, limit }: Request['query']): PaginationParams => {
   }
 };
 
-
 router.get('/:collectionId/entries', async (req: Request<{ collectionId: string; }, ListEntriesResponseBody, object, ListEntriesQueryParams>, res) => {
   const { collectionId } = req.params;
   const { user } = req;

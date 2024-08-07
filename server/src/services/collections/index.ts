@@ -53,11 +53,6 @@ export const collectionService = {
     const collections = await collectionCollectionRef.where('createdBy', '==', userRef).get().then(({ docs }) => docs.sort((a, b) => (
       b.updateTime.seconds - a.updateTime.seconds
     )).map(doc => ({ id: doc.id, ...doc.data() })));
-    // )).map(doc => {
-    //   console.log(doc.data().title);
-    //   console.log(doc.updateTime.toDate());
-    //   return { id: doc.id, ...doc.data() };
-    // }));
     return collections;
   },
   count: async (): Promise<number> => {

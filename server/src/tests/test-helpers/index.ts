@@ -55,7 +55,6 @@ export const loadInitialData = async () => {
           term: await termResolver(collectionId, id, entry.term),
           definition: entry.definition,
           examples: await examplesResolver(collectionId, id, entry.examples ?? []),
-          imageUrls: entry.imageUrls ?? [],
           priority: entry.priority ?? 3
         };
       }));
@@ -97,8 +96,6 @@ const assertExamplesEqual = (actual: Example, expected: AddEntryRequestExamplePa
   });
 
   if (expected.audioUrl) assert.strictEqual(actual.audioUrl, expected.audioUrl);
-  if (expected.imageUrls) assert.strictEqual(actual.imageUrls, expected.imageUrls);
-  if (expected.notes) assert.strictEqual(actual.notes, expected.notes);
 };
 
 export const assertEntriesEqual = (actual: Entry, params: UpdateEntryRequestBody, original?: Entry) => {
@@ -110,9 +107,6 @@ export const assertEntriesEqual = (actual: Entry, params: UpdateEntryRequestBody
 
   if (params.examples) params.examples.forEach((example, i) => assertExamplesEqual(actual.examples[i], example));
   else if (original) original.examples.forEach((example, i) => assertExamplesEqual(actual.examples[i], example));
-
-  if (params.imageUrls) assert.strictEqual(actual.imageUrls, params.imageUrls);
-  else if (original) assert.strictEqual(actual.imageUrls, original.imageUrls);
 
   if (params.priority) assert.strictEqual(actual.priority, params.priority);
   else if (original) assert.strictEqual(actual.priority, original.priority);

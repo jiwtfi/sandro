@@ -7,7 +7,6 @@ import {
   termResolver,
   validateDefinition,
   validateExamples,
-  validateImageUrls,
   validatePriority,
   validateTerm,
   catchValidationError
@@ -39,14 +38,6 @@ const validate = (body: Request['body']): AddEntryRequestBody => {
     }
   }
 
-  if (body.imageUrls) {
-    try {
-      params.imageUrls = validateImageUrls(body.imageUrls);
-    } catch (err) {
-      catchValidationError(err, errors);
-    }
-  }
-
   if (body.priority) {
     try {
       params.priority = validatePriority(body.priority);
@@ -72,7 +63,6 @@ router.post('/:collectionId/entries', async (req: Request<{ collectionId: string
   // Validation
   const { term, definition, ...params } = validate(req.body);
   const examples = params.examples ?? [];
-  const imageUrls = params.imageUrls ?? [];
   const priority = params.priority ?? 3;
 
   const entryId = getEntryId(collectionId);
@@ -81,7 +71,7 @@ router.post('/:collectionId/entries', async (req: Request<{ collectionId: string
     term: await termResolver(collectionId, entryId, term),
     definition,
     examples: await examplesResolver(collectionId, entryId, examples),
-    imageUrls, priority
+    priority
   };
 
   const entry = await entryService.create(collectionId, entryId, entryParams);

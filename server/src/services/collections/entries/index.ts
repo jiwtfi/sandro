@@ -39,19 +39,19 @@ export const entryService = {
     return { id: entryId, ...data };
   },
   create: async (collectionId: string, entryId: string, params: NewEntryParams): Promise<WithId<Entry>> => {
-    const { term, definition, examples, imageUrls, priority } = params;
+    const { term, definition, examples, priority } = params;
     const entryCollectionRef = getEntryCollectionRef(collectionId);
     const index = await getEntryCount(entryCollectionRef);
     const docRef = entryCollectionRef.doc(entryId);
     await docRef.set({
-      term, definition, examples, imageUrls, priority, index
+      term, definition, examples, priority, index
     });
     const { id, data } = await docRef.get().then(doc => ({ id: doc.id, data: doc.data() }));
     if (!data) throw new Error();
     return { id, ...data };
   },
   update: async (collectionId: string, entryId: string, params: UpdateEntryParams): Promise<WithId<Entry>> => {
-    const { term, definition, examples, imageUrls, priority, index } = params;
+    const { term, definition, examples, priority, index } = params;
 
     try {
       const entryCollectionRef = getEntryCollectionRef(collectionId);
@@ -70,7 +70,6 @@ export const entryService = {
         ...(term ? { term } : {}),
         ...(definition ? { definition } : {}),
         ...(examples ? { examples } : {}),
-        ...(imageUrls ? { imageUrls } : {}),
         ...(priority ? { priority } : {}),
         ...(index ? { index } : {}),
       });
@@ -121,9 +120,9 @@ export const entryService = {
 
     const batch = db.batch();
     entries.forEach((entry, i) => {
-      const { term, definition, examples, imageUrls, priority } = entry;
+      const { term, definition, examples, priority } = entry;
       batch.set(entryCollectionRef.doc(entry.id), {
-        term, definition, examples, imageUrls, priority,
+        term, definition, examples, priority,
         index: count + i
       });
     });
@@ -138,7 +137,7 @@ export const entryService = {
 
     await db.runTransaction(async transaction => {
       await Promise.all(entries.map(async entry => {
-        const { id, term, definition, examples, imageUrls, priority, index } = entry;
+        const { id, term, definition, examples, priority, index } = entry;
 
         const docRef = entryCollectionRef.doc(id);
         const data = await transaction.get(docRef).then(doc => doc.data());
@@ -149,7 +148,6 @@ export const entryService = {
           ...(term ? { term } : {}),
           ...(definition ? { definition } : {}),
           ...(examples ? { examples } : {}),
-          ...(imageUrls ? { imageUrls } : {}),
           ...(priority ? { priority } : {}),
           ...(index ? { index } : {}),
         });
