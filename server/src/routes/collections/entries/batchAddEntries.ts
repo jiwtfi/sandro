@@ -7,7 +7,6 @@ import {
   termResolver,
   validateDefinition,
   validateExamples,
-  validateImageUrls,
   validatePriority,
   validateTerm,
   catchValidationError
@@ -46,14 +45,6 @@ const validate = (body: Request['body']): BatchAddEntriesRequestBody => {
       }
     }
 
-    if (obj.imageUrls) {
-      try {
-        entry.imageUrls = validateImageUrls(obj.imageUrls);
-      } catch (err) {
-        catchValidationError(err, errors);
-      }
-    }
-
     if (obj.priority) {
       try {
         entry.priority = validatePriority(obj.priority);
@@ -82,7 +73,7 @@ router.post('/:collectionId/entries/batch', async (req: Request<{ collectionId: 
   const params = validate(req.body);
 
   const entriesParams = await Promise.all(params.map<Promise<WithId<NewEntryParams>>>(async ({
-    term, definition, examples, imageUrls, priority
+    term, definition, examples, priority
   }) => {
     const id = getEntryId(collectionId);
     return {
@@ -90,7 +81,6 @@ router.post('/:collectionId/entries/batch', async (req: Request<{ collectionId: 
       term: await termResolver(collectionId, id, term),
       definition,
       examples: await examplesResolver(collectionId, id, examples ?? []),
-      imageUrls: imageUrls ?? [],
       priority: priority ?? 3
     };
   }));

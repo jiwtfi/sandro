@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from './TextField';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { selectHasUnsavedChanges, setHasUnsavedChanges } from '../reducers/uiSlice';
@@ -36,7 +38,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
   const defaultValues = {
     title: collection?.title ?? '',
     description: collection?.description ?? '',
-    // isPrivate: collection?.private
+    isPrivate: collection?.private ?? false
   };
 
   const {
@@ -60,9 +62,10 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
     defaultValue: defaultValues.description,
     error: extractFieldError(fieldErrors, 'description')
   });
+  const [isPrivate, setIsPrivate] = useState(defaultValues.isPrivate);
 
   const isValid = isTitleValid && isDescriptionValid;
-  const isModified = !collection || ((collection.title !== title.value) || (collection.description !== description.value));
+  const isModified = !collection || ((collection.title !== title.value) || (collection.description !== description.value)) || (collection.private !== isPrivate);
 
   const clearValues = () => {
     clearTitle();
@@ -74,6 +77,14 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
   useEffect(() => {
     dispatch(setHasUnsavedChanges((isTitleTouched || isDescriptionTouched) && (!isTitleEmpty || !isDescriptionEmpty)));
   }, [isTitleTouched, isDescriptionTouched, isTitleEmpty, isDescriptionEmpty, dispatch]);
+
+  useEffect(() => {
+    setFieldErrors(fieldErrors => fieldErrors.filter(({ field }) => field !== 'title'));
+  }, [title.value]);
+
+  useEffect(() => {
+    setFieldErrors(fieldErrors => fieldErrors.filter(({ field }) => field !== 'description'));
+  }, [description.value]);
 
   const handleClose = () => {
     if (hasUnsavedChanges) {
@@ -97,6 +108,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
         body: {
           ...(isTitleTouched ? { title: title.value } : {}),
           ...(isDescriptionTouched ? { description: description.value } : {}),
+          private: isPrivate
         }
       });
       if ('data' in result) {
@@ -116,7 +128,8 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
       const result = await createCollection({
         body: {
           title: title.value,
-          ...(description.value ? { description: description.value } : {})
+          ...(description.value ? { description: description.value } : {}),
+          private: isPrivate
         }
       });
       if ('data' in result) {
@@ -158,6 +171,15 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ isOpen, set
             label="Description"
             name="description"
             {...description}
+          />
+          <FormControlLabel
+            sx={{ paddingBottom: '1rem' }}
+            control={(
+              <Checkbox
+                checked={isPrivate}
+                onChange={(e, checked) => setIsPrivate(checked)}
+              />
+            )} label="Private Collection"
           />
           <LoadingButton
             fullWidth

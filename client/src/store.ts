@@ -2,6 +2,7 @@ import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import authReducer from './reducers/authSlice';
 import uiReducer from './reducers/uiSlice';
 import gameReducer from './reducers/gameSlice';
+import flashcardsReducer from './reducers/flashcardsSlice';
 import searchReducer from './reducers/searchSlice';
 import { api } from './api';
 // import { setupListeners } from '@reduxjs/toolkit/query';
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: authReducer,
     ui: uiReducer,
     game: gameReducer,
+    flashcards: flashcardsReducer,
     search: searchReducer
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(api.middleware)

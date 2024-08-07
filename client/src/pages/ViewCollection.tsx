@@ -53,6 +53,7 @@ const ViewCollection = () => {
                 }}
               /> : null}
               <FlashcardsButton
+                onClick={() => navigate(`/collections/${collectionId}/flashcards`)}
                 sx={actionButtonBaseStyles}
               />
               <GameButton

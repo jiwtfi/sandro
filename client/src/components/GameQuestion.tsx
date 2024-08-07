@@ -48,7 +48,6 @@ const LetterButton: React.FC<LetterButtonProps> = ({ buttonRefs, letter, index }
           fontFamily="monospace">{letter.toUpperCase()}</Typography>
       </ButtonBase>
     </Stack>
-
   )
 };
 

@@ -7,7 +7,6 @@ import {
   termResolver,
   validateDefinition,
   validateExamples,
-  validateImageUrls,
   validatePriority,
   validateTerm,
   catchValidationError
@@ -38,14 +37,6 @@ const validate = (body: Request['body']): UpdateEntryRequestBody => {
   if (body.examples) {
     try {
       params.examples = validateExamples(body.examples);
-    } catch (err) {
-      catchValidationError(err, errors);
-    }
-  }
-
-  if (body.imageUrls) {
-    try {
-      params.imageUrls = validateImageUrls(body.imageUrls);
     } catch (err) {
       catchValidationError(err, errors);
     }
@@ -83,7 +74,6 @@ router.patch('/:collectionId/entries/:entryId', async (req, res) => {
     ...(params.term ? { term: await termResolver(collectionId, entryId, params.term) } : {}),
     ...(params.definition ? { definition: params.definition } : {}),
     ...(params.examples ? { examples: await examplesResolver(collectionId, entryId, params.examples) } : {}),
-    ...(params.imageUrls ? { imageUrls: params.imageUrls } : {}),
     ...(params.priority ? { priority: params.priority } : {}),
     ...(params.index ? { index: params.index } : {}),
   };

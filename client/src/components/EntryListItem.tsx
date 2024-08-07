@@ -8,11 +8,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Theme } from '@mui/material/styles';
 import { Entry, WithId } from '../types';
 import { actionButtonBaseStyles, DeleteButton, EditButton } from './ActionButtons';
-import { sliceExampleText } from '../utils/exampleText';
+import { sliceExampleText } from '../utils/example';
 import SelectPriority from './SelectPriority';
-import { useUpdateEntryMutation } from '../api';
 import ActionButtonsContainer from './ActionButtonsContainer';
 import { useDeleteEntryDialog } from '../hooks/useDeleteEntryDialog';
+import { usePriorityChangeHandler } from '../utils/priority';
 
 interface EntryListItemProps {
   entry: WithId<Entry>;
@@ -22,16 +22,8 @@ const EntryListItem: React.FC<EntryListItemProps> = ({ entry }) => {
   const navigate = useNavigate();
   const { collectionId } = useParams() as { collectionId: string; };
   const isMd = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
-  const [updateEntry] = useUpdateEntryMutation();
   const { Dialog: DeleteEntryDialog, setEntry: setEntryToBeDeleted } = useDeleteEntryDialog({ collectionId });
-
-  const handlePriorityChange = async (value: number) => {
-    if (value === entry.priority) return;
-    await updateEntry({
-      collectionId, entryId: entry.id,
-      body: { priority: value }
-    });
-  };
+  const handlePriorityChange = usePriorityChangeHandler(collectionId, entry);
 
   return (
     <ListItem divider>
@@ -44,14 +36,12 @@ const EntryListItem: React.FC<EntryListItemProps> = ({ entry }) => {
           <Grid item xs={12} md={4}>
             <Typography
               variant="h6"
-              sx={{
-                flex: 1,
-              }}>{entry.term.text}</Typography>
+              sx={{ flex: 1, overflowWrap: 'anywhere' }}>{entry.term.text}</Typography>
           </Grid>
           <Grid item xs={12} md={8}>
             <Stack flex={2}>
-              <Typography sx={{ fontSize: { xs: '95%', md: '100%' } }}>{entry.definition.text}</Typography>
-              <Typography variant="body2"              >
+              <Typography sx={{ fontSize: { xs: '95%', md: '100%' }, overflowWrap: 'anywhere' }}>{entry.definition.text}</Typography>
+              <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
                 {entry.examples?.map((example, i) => (
                   sliceExampleText(example).map((text, j) => (
                     <Fragment key={`${entry.id}-example-${i}-${j}`}>{(j % 2 === 1) ? (
@@ -66,7 +56,7 @@ const EntryListItem: React.FC<EntryListItemProps> = ({ entry }) => {
         <ActionButtonsContainer direction={isMd ? 'row' : 'column'}>
           <SelectPriority
             priority={entry.priority}
-            onChange={value => handlePriorityChange(value)}
+            onChange={handlePriorityChange}
             iconButtonProps={{ size: 'small', sx: actionButtonBaseStyles }}
           />
           <EditButton

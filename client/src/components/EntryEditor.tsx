@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
@@ -7,19 +7,19 @@ import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAddEntryMutation, useListEntriesQuery, useUpdateEntryMutation } from '../api';
 import { AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Example } from '../types';
 import TextField from '../components/TextField';
 import { useTextField } from '../hooks/useTextField';
 import { AddButton, CancelButton, DeleteButton, EditButton, SaveButton } from '../components/ActionButtons';
-import { parseExampleOccurrences, sliceExampleText, stringifyExampleText } from '../utils/exampleText';
+import { parseExampleOccurrences, stringifyExampleText } from '../utils/example';
 import { languages } from '../config';
 import { validateDefinitionText, validateExampleTextStringInput, validateTermText } from '../utils';
 import IconButton from '../components/IconButton';
 import SelectPriority from './SelectPriority';
+import PaginationControl from './PaginationControl';
+import ExampleText from './ExampleText';
 
 interface ExampleTextRowProps {
   example: Pick<Example, 'text' | 'occurrences'>;
@@ -47,17 +47,13 @@ const ExampleTextRow: React.FC<ExampleTextRowProps> = ({ example, index, selecte
       alignItems="center"
       key={`example-${index}`}
     >
-      <Typography sx={{
-        flex: 1,
-        opacity: selected ? .5 : 1
-      }}>
-        {sliceExampleText(example).map((text, j) => (
-          <span key={`example-${index}-${j}`}>{(j % 2 === 1) ? (
-            <span style={{ fontWeight: 'bold' }}>{text}</span>
-          ) : text}
-          </span>
-        ))}
-      </Typography>
+      <ExampleText
+        example={example}
+        index={index}
+        sx={{
+          flex: 1,
+          opacity: selected ? .5 : 1
+        }} />
       <Stack direction="row" spacing={1}>
         <EditButton
           size="small"
@@ -204,11 +200,13 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
 
   const updateExample = () => {
     if (exampleDraft.error) return;
+    const { text, occurrences } = parseExampleOccurrences(exampleDraft.value);
     setExamples([
       ...examples.slice(0, exampleDraftIndex),
       {
         ...examples[exampleDraftIndex],
-        ...parseExampleOccurrences(exampleDraft.value),
+        audioUrl: text === examples[exampleDraftIndex].text ? examples[exampleDraftIndex].audioUrl : undefined,
+        text, occurrences,
         lang: termLang
       },
       ...examples.slice(exampleDraftIndex + 1)
@@ -243,7 +241,6 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
       });
       setFeedbackMessage('Entry updated');
     }
-    // refetch();
   };
 
   return (
@@ -259,7 +256,7 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
           <Typography>{feedbackMessage}</Typography>
         </Alert>
       </Snackbar>
-      <form style={{ height: '100%', paddingBottom: '1rem' }}>
+      <form style={{ flex: 1, paddingBottom: '1rem' }}>
         <Stack paddingTop="1rem" spacing={3} flex={1}>
           <Stack direction="row" spacing={1} alignItems="center">
             <TextField
@@ -291,9 +288,7 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
             />
           </Stack>
           <Stack spacing={1}>
-            <Stack direction="row" alignItems="center">
-              <Typography sx={{ fontWeight: 'bold', flex: 1 }}>Examples</Typography>
-            </Stack>
+            <Typography sx={{ fontWeight: 'bold' }}>Examples</Typography>
             {examples.map((example, i) => (
               <ExampleTextRow
                 key={`example-${i}`}
@@ -337,21 +332,16 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
         </Stack>
       </form>
       <Divider />
-      <Stack direction="row" paddingTop=".5rem" alignItems="center">
-        <IconButton
-          disabled={entryIndex === 0}
-          onClick={() => navigate(`/collections/${collectionId}/entries/${entries[isNew ? entries.length - 1 : entryIndex - 1].id}/edit`)}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <Stack direction="row" alignItems="center" spacing={3} flex={1} justifyContent="center">
-          <Typography>
-            {isNew ? 'new' : entryIndex + 1} / {entries.length}
-          </Typography>
-          <Stack direction="row" alignItems="center" spacing={1} justifyContent="center">
+      <PaginationControl
+        currentIndex={isNew ? 'new' : entryIndex + 1}
+        totalCount={entries.length}
+        onBack={entryIndex !== 0 ? () => navigate(`/collections/${collectionId}/entries/${entries[isNew ? entries.length - 1 : entryIndex - 1].id}/edit`) : undefined}
+        onForward={!isNew ? () => navigate(`/collections/${collectionId}/entries/${entryIndex === entries.length - 1 ? 'new' : `${entries[entryIndex + 1].id}/edit`}`) : undefined}
+        actions={(
+          <Fragment>
             <IconButton
               title="Cancel"
-              onClick={() => navigate(`/collections/${collectionId}/view`)}
+              onClick={() => navigate(entry ? `/collections/${collectionId}/entries/${entry.id}/view` : `/collections/${collectionId}/view`)}
             >
               <CloseIcon />
             </IconButton>
@@ -366,16 +356,9 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ entryIndex }) => {
                 onClick={handleSubmit}
               />
             )}
-          </Stack>
-        </Stack>
-        <IconButton
-          disabled={isNew}
-          onClick={() => navigate(`/collections/${collectionId}/entries/${entryIndex === entries.length - 1 ? 'new' : `${entries[entryIndex + 1].id}/edit`}`)}
-        >
-          <ArrowForwardIcon />
-        </IconButton>
-
-      </Stack>
+          </Fragment>
+        )}
+      />
     </Stack>
   );
 };

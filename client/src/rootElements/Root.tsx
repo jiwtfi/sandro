@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -7,13 +7,14 @@ import MuiCSSBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
 import NavBar from '../components/NavBar';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { selectIsAppLoading } from '../reducers/uiSlice';
+import { selectIsAppLoading, setSoundAutoplay } from '../reducers/uiSlice';
 import Spinner from '../components/Spinner';
-
-
+import { retrievePreferencesFromLocalStorage } from '../utils/preferences';
+import { useAppDispatch } from '../hooks/useAppDispatch';
 
 const Root = () => {
   const isLoading = useAppSelector(selectIsAppLoading);
+  const dispatch = useAppDispatch();
 
   const defaultTheme = createTheme({
     palette: {
@@ -27,6 +28,11 @@ const Root = () => {
       }
     }
   });
+
+  useEffect(() => {
+    const { autoPlay } = retrievePreferencesFromLocalStorage();
+    dispatch(setSoundAutoplay(autoPlay));
+  }, [dispatch]);
 
   return (
     <Fragment>

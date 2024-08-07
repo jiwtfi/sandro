@@ -1,11 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Switch from '@mui/material/Switch';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { useListEntriesQuery } from '../api';
 import { ListEntriesResponseBody } from '../types';
@@ -17,32 +14,40 @@ import {
   nextQuestion,
   previousQuestion,
   reveal,
-  selectExampleIndex,
+  selectCurrentExampleIndex,
   selectExampleLength,
   selectIsComplete,
   selectIsGameLoaded,
+  selectIsShuffled,
   selectLetters,
-  // selectPreferences,
   setIsComplete,
+  setIsShuffled
 } from '../reducers/gameSlice';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { AudioButton, CancelButton, MuteButton } from '../components/ActionButtons';
-import { selectSoundAutoplay, setSoundAutoplay } from '../reducers/uiSlice';
+import { AudioButton, PreferencesButton } from '../components/ActionButtons';
+import { selectSoundAutoplay } from '../reducers/uiSlice';
+import FullScreenContainer from '../components/FullScreenContainer';
+import PaginationControl from '../components/PaginationControl';
+import PreferencesDialog, { PreferenceRow } from '../components/PreferencesDialog';
 
 const Game = () => {
   const navigate = useNavigate();
   const { collectionId } = useParams() as { collectionId: string; };
   const { data: { data: entries } } = useListEntriesQuery({ collectionId }) as { data: ListEntriesResponseBody; };
   const dispatch = useAppDispatch();
-  const exampleIndex = useAppSelector(selectExampleIndex);
+  const currentExampleIndex = useAppSelector(selectCurrentExampleIndex);
   const isGameLoaded = useAppSelector(selectIsGameLoaded);
   const letters = useAppSelector(selectLetters);
   const isComplete = useAppSelector(selectIsComplete);
   const exampleLength = useAppSelector(selectExampleLength);
-  // const preferences = useAppSelector(selectPreferences);
   const soundAutoPlay = useAppSelector(selectSoundAutoplay);
+  const isShuffled = useAppSelector(selectIsShuffled)
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>(Array(4).fill(null));
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const handleOpen = () => setIsDialogOpen(true);
+  const handleClose = () => setIsDialogOpen(false);
 
   useEffect(() => {
     dispatch(initializeGame({ entries }));
@@ -64,7 +69,7 @@ const Game = () => {
   }, [dispatch, isComplete, handleInput]);
 
   const playAudio = useCallback(() => audioRef.current?.play(), []);
-  const stopAudio = useCallback(() => audioRef.current?.pause(), []);
+  // const stopAudio = useCallback(() => audioRef.current?.pause(), []);
 
   useEffect(() => {
     document.addEventListener('keydown', keydownEventListener);
@@ -75,21 +80,16 @@ const Game = () => {
     if (isComplete && soundAutoPlay) playAudio();
   }, [isComplete, playAudio, soundAutoPlay]);
 
+  // useEffect(() => {
+  //   if (!soundAutoPlay) stopAudio();
+  // }, [soundAutoPlay, stopAudio]);
+
   useEffect(() => {
     return () => { dispatch(setIsComplete(false)); };
   }, [dispatch]);
 
   return (
-    <Paper
-      sx={{
-        height: '100vh',
-        width: '100vw',
-        maxHeight: '-webkit-fill-available',
-        position: 'absolute',
-        left: 0,
-        top: 0
-      }}
-    >
+    <FullScreenContainer onExit={() => { navigate(`/collections/${collectionId}/view`) }}>
       <Container sx={{ height: '100%' }}>
         <Stack
           width="100%"
@@ -98,28 +98,6 @@ const Game = () => {
           spacing={3}
         >
           <Stack
-            width="100%"
-            height="64px"
-            direction="row"
-            alignItems="center"
-          >
-            <Stack flex={1} />
-            {soundAutoPlay ? (
-              <AudioButton title="Autoplay: ON" onClick={() => {
-                stopAudio();
-                dispatch(setSoundAutoplay(false));
-              }} />
-            ) : (
-              <MuteButton title="Autoplay: OFF" onClick={() => dispatch(setSoundAutoplay(true))} />
-            )}
-            <CancelButton
-              title="Exit"
-              onClick={() => { navigate(`/collections/${collectionId}/view`) }}
-              border={false}
-
-            />
-          </Stack>
-          <Stack
             flex={5}
             width="100%"
             alignItems="center"
@@ -127,7 +105,7 @@ const Game = () => {
           >
             {isGameLoaded ? (
               <GameQuestion
-                key={`question-${exampleIndex}`}
+                key={`question-${currentExampleIndex}`}
                 audioRef={audioRef}
                 buttonRefs={buttonRefs}
               />
@@ -151,36 +129,29 @@ const Game = () => {
               >
                 <LightbulbIcon />
               </IconButton>
-              {/* <PreferencesButton /> */}
+              <PreferencesButton onClick={handleOpen} />
             </Stack>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <IconButton
-                onClick={() => dispatch(previousQuestion())}
-              >
-                <ArrowBackIcon />
-              </IconButton>
-              <Typography>
-                {exampleIndex + 1} / {exampleLength}
-              </Typography>
-
-              <IconButton
-                onClick={() => dispatch(nextQuestion())}
-              >
-                <ArrowForwardIcon />
-              </IconButton>
-            </Stack>
-
+            <PaginationControl
+              onBack={() => dispatch(previousQuestion())}
+              onForward={() => dispatch(nextQuestion())}
+              currentIndex={currentExampleIndex + 1}
+              totalCount={exampleLength}
+            />
           </Stack>
-
-
         </Stack>
+        <PreferencesDialog
+          open={isDialogOpen}
+          onClose={handleClose}
+        >
+          <PreferenceRow label="Shuffle">
+            <Switch
+              checked={isShuffled}
+              onChange={(event, checked) => dispatch(setIsShuffled(checked))}
+            />
+          </PreferenceRow>
+        </PreferencesDialog>
       </Container>
-    </Paper >
+    </FullScreenContainer>
   );
 };
 

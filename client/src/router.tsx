@@ -11,6 +11,9 @@ import ViewCollection from './pages/ViewCollection';
 import ListCollections from './pages/ListCollections';
 import EditEntry from './pages/EditEntry';
 import Game from './pages/Game';
+import Flashcards from './pages/Flashcards';
+import ViewEntry from './pages/ViewEntry';
+import IndexPage from './pages/IndexPage';
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +21,7 @@ export const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <IndexPage /> },
       { path: 'home', element: <Home /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <Signup /> },
@@ -38,12 +42,14 @@ export const router = createBrowserRouter([
                   {
                     path: ':entryId',
                     children: [
-                      { path: 'edit', element: <EditEntry /> }
+                      { path: 'edit', element: <EditEntry /> },
+                      { path: 'view', element: <ViewEntry /> },
                     ]
                   }
                 ]
               },
-              { path: 'game', element: <Game /> }
+              { path: 'game', element: <Game /> },
+              { path: 'flashcards', element: <Flashcards /> }
             ]
           },
           {

@@ -1,17 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { Definition, Entry, Example, Term } from '../types';
-import { isLocaleAlpha, shuffle, shuffleExamples } from '../utils';
-import { splitExample } from '../utils/exampleText';
+import { Entry, TermExample } from '../types';
+import { extractExamplesFromEntries, isLocaleAlpha, shuffle, weightedShuffle } from '../utils';
+import { splitExample } from '../utils/example';
+import { retrievePreferencesFromLocalStorage, savePreferencesToLocalStorage } from '../utils/preferences';
 
 interface GameState {
-  examples: {
-    example: Example;
-    definition: Definition;
-    term: Term;
-    priority: number;
-  }[];
-  exampleIndex: number;
+  examples: TermExample[];
+  currentExampleIndex: number;
   prompt: string[];
   words: string[];
   currentWordIndex: number;
@@ -19,15 +15,12 @@ interface GameState {
   revealed: string[];
   letters: string[];
   isComplete: boolean;
-  preferences: {
-    prompt: 'example' | 'term';
-    multipleChoice: boolean;
-  };
+  isShuffled: boolean;
 }
 
 const initialState: GameState = {
   examples: [],
-  exampleIndex: 0,
+  currentExampleIndex: 0,
   prompt: [],
   words: [],
   currentWordIndex: 0,
@@ -35,10 +28,7 @@ const initialState: GameState = {
   revealed: [],
   letters: [],
   isComplete: false,
-  preferences: {
-    prompt: 'example',
-    multipleChoice: false
-  }
+  isShuffled: false
 };
 
 const getLetters = (text: string, lang: string) => shuffle(
@@ -66,7 +56,7 @@ const replaceLetters = (state: GameState, letter: string) => {
 
 const setLetters = (state: GameState) => {
   const size = 4;
-  const { words, currentWordIndex, currentLetterIndex, exampleIndex } = state;
+  const { words, currentWordIndex, currentLetterIndex, currentExampleIndex } = state;
   const letters = new Set<string>(state.letters);
   const currentWord = words[currentWordIndex];
   letters.add(currentWord[currentLetterIndex].toLowerCase());
@@ -76,7 +66,7 @@ const setLetters = (state: GameState) => {
   }
 
   if (letters.size < size) {
-    const { lang } = state.examples[exampleIndex].example;
+    const { lang } = state.examples[currentExampleIndex].example;
     const examples = shuffle(state.examples);
     for (let i = 0; i < examples.length; i++) {
       const options = getLetters(examples[i].example.text, lang);
@@ -93,7 +83,7 @@ const setLetters = (state: GameState) => {
 };
 
 const initQuestion = (state: GameState): GameState => {
-  const { prompt, words } = splitExample(state.examples[state.exampleIndex].example);
+  const { prompt, words } = splitExample(state.examples[state.currentExampleIndex].example);
   state.prompt = prompt;
   state.words = words;
   state.currentWordIndex = 0;
@@ -110,13 +100,11 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     initializeGame: (state, { payload: { entries } }: PayloadAction<{ entries: Entry[]; }>) => {
-      state.examples = shuffleExamples(entries.reduce((acc, { term, definition, examples, priority }) => ([
-        ...acc,
-        ...examples.filter(({ occurrences }) => occurrences.length > 0).map(example => ({
-          example, definition, term, priority
-        }))
-      ]), [] as { example: Example; definition: Definition; term: Term; priority: number; }[]));
-      state.exampleIndex = 0;
+      const preferences = retrievePreferencesFromLocalStorage();
+      state.isShuffled = preferences.gameShuffle;
+      const examples = extractExamplesFromEntries(entries, true);
+      state.examples = state.isShuffled ? weightedShuffle(examples) : examples;
+      state.currentExampleIndex = 0;
       state = initQuestion(state);
       return state;
     },
@@ -124,15 +112,12 @@ export const gameSlice = createSlice({
       state.isComplete = action.payload;
       return state;
     },
-    initializeQuestion: state => {
-      return initQuestion(state);
-    },
     previousQuestion: state => {
-      state.exampleIndex = (state.exampleIndex - 1 + state.examples.length) % state.examples.length;
+      state.currentExampleIndex = (state.currentExampleIndex - 1 + state.examples.length) % state.examples.length;
       return initQuestion(state);
     },
     nextQuestion: state => {
-      state.exampleIndex = (state.exampleIndex + 1) % state.examples.length;
+      state.currentExampleIndex = (state.currentExampleIndex + 1) % state.examples.length;
       return initQuestion(state);
     },
     reveal: state => {
@@ -160,31 +145,50 @@ export const gameSlice = createSlice({
       replaceLetters(state, oldLetter);
       return state;
     },
+    setIsShuffled: (state, action: PayloadAction<boolean>) => {
+      if (action.payload === state.isShuffled) return state;
+      state.isShuffled = action.payload;
+      savePreferencesToLocalStorage({ gameShuffle: action.payload });
+      if (action.payload) {
+        state.examples = [
+          state.examples[state.currentExampleIndex],
+          ...weightedShuffle([
+            ...state.examples.slice(0, state.currentExampleIndex),
+            ...state.examples.slice(state.currentExampleIndex + 1)
+          ])
+        ];
+        state.currentExampleIndex = 0;
+      } else {
+        state.currentExampleIndex = state.examples[state.currentExampleIndex].exampleIndex;
+        state.examples.sort((a, b) => a.exampleIndex - b.exampleIndex);
+      }
+      return state;
+    }
 
   }
 });
 
 export const {
   initializeGame,
-  initializeQuestion,
   previousQuestion,
   nextQuestion,
   reveal,
-  setIsComplete
+  setIsComplete,
+  setIsShuffled
 } = gameSlice.actions;
 
 export const selectIsGameLoaded = ({ game: { revealed } }: RootState) => revealed.length > 0;
-export const selectDefinition = ({ game: { examples, exampleIndex } }: RootState) => examples[exampleIndex].definition;
-export const selectTerm = ({ game: { examples, exampleIndex } }: RootState) => examples[exampleIndex].term;
+export const selectDefinition = ({ game: { examples, currentExampleIndex } }: RootState) => examples[currentExampleIndex].definition;
+export const selectTerm = ({ game: { examples, currentExampleIndex } }: RootState) => examples[currentExampleIndex].term;
 export const selectRevealed = (state: RootState) => state.game.revealed;
-export const selectExample = ({ game: { examples, exampleIndex } }: RootState) => examples[exampleIndex].example;;
-export const selectExampleIndex = (state: RootState) => state.game.exampleIndex;
+export const selectExample = ({ game: { examples, currentExampleIndex } }: RootState) => examples[currentExampleIndex].example;;
+export const selectCurrentExampleIndex = (state: RootState) => state.game.currentExampleIndex;
 export const selectExampleLength = (state: RootState) => state.game.examples.length;
 export const selectCurrentLetter = ({ game: { words, currentWordIndex, currentLetterIndex } }: RootState) => (
   words.length === 0 ? '' : words[currentWordIndex][currentLetterIndex]
 );
 export const selectLetters = (state: RootState) => state.game.letters;
 export const selectIsComplete = (state: RootState) => state.game.isComplete;
-export const selectPreferences = (state: RootState) => state.game.preferences;
+export const selectIsShuffled = (state: RootState) => state.game.isShuffled;
 
 export default gameSlice.reducer;

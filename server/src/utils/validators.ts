@@ -1,5 +1,5 @@
 import { isEmail, isLength, isURL } from 'validator';
-import { AddEntryRequestBody, AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Example } from '../types';
+import { AddEntryRequestExampleParams, AddEntryRequestTermParams, Definition, Example } from '../types';
 import { PaginationParams } from '../types/pagination';
 import { ValidationError, ValidationErrorParams } from '../errors/ValidationError';
 
@@ -211,16 +211,6 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
             catchValidationError(err, errors);
           }
         }
-
-        if (params[i].imageUrls) {
-          try {
-            example.imageUrls = validateImageUrls(params[i].imageUrls, getImageUrlsErrorParams(i), (j: number) => getImageUrlErrorParams(i, j));
-          } catch (err) {
-            catchValidationError(err, errors);
-          }
-        }
-
-        if (params[i].notes) example.notes = params[i].notes;
       }
 
       examples.push(example as Example);
@@ -230,29 +220,6 @@ export const validateExamples: Validator<AddEntryRequestExampleParams[]> = (para
   if (errors.length > 0) throw new ValidationError(errors);
   return examples;
 
-};
-
-
-export const validateImageUrls: Validator<string[]> = (params, imageUrlsErrorParams?: ValidationErrorParams, getImageUrlErrorParams?: (i: number) => ValidationErrorParams) => {
-  const imageUrlsErrParams = imageUrlsErrorParams ?? { field: 'imageUrls', message: 'The image URLs are invalid' };
-  const getImageUrlErrParams = getImageUrlErrorParams ? getImageUrlErrorParams : (i: number) => ({ field: `imageUrls[${i}]`, message: 'The image URL is invalid' });
-  const errors: ValidationErrorParams[] = [];
-  const imageUrls: string[] = [];
-
-  if (!Array.isArray(params)) errors.push(imageUrlsErrParams);
-  else {
-    for (let i = 0; i < params.length; i++) {
-      try {
-        const imageUrl = validateImageUrl(params[i], getImageUrlErrParams(i));
-        imageUrls.push(imageUrl);
-      } catch (err) {
-        catchValidationError(err, errors);
-      }
-    }
-  }
-
-  if (errors.length > 0) throw new ValidationError(errors);
-  return imageUrls;
 };
 
 export const validatePriority: Validator<number> = (num) => {

@@ -1,4 +1,4 @@
-import { Example, Occurrence } from '../types';
+import { Entry, Example, Occurrence, TermExample } from '../types';
 
 type ExampleHandlerInput = Pick<Example, 'text' | 'occurrences'>;
 
@@ -53,3 +53,11 @@ export const splitExample = (example: ExampleHandlerInput) => {
 
   return { prompt, words };
 };
+
+export const extractExamplesFromEntries = (entries: Entry[], game = false) => entries.reduce((acc, { examples, ...entry }) => ([
+  ...acc,
+  ...examples.filter(({ occurrences }) => (game ? occurrences.length > 0 : true)).map(example => ({
+    example,
+    ...entry
+  }))
+]), [] as Omit<TermExample, 'exampleIndex'>[]).map((example, i) => ({ ...example, exampleIndex: i }));

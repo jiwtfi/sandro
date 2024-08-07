@@ -11,8 +11,6 @@ const validate = (body: Request['body']): UpdateCollectionRequestBody => {
   const errors: ValidationErrorParams[] = [];
   const params: UpdateCollectionRequestBody = {};
 
-  // private
-
   if (body.title) {
     try {
       params.title = validateCollectionTitle(body.title);
@@ -28,6 +26,8 @@ const validate = (body: Request['body']): UpdateCollectionRequestBody => {
       catchValidationError(err, errors);
     }
   }
+
+  if (body.private) params.private = true;
 
   if (errors.length > 0) throw new RequestValidationError(errors);
   return params as UpdateCollectionRequestBody;

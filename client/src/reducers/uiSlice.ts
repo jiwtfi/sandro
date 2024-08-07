@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import { savePreferencesToLocalStorage } from '../utils/preferences';
 
 interface UiState {
   isAppLoading: boolean;
@@ -27,6 +28,7 @@ export const uiSlice = createSlice({
     },
     setSoundAutoplay: (state, action: PayloadAction<boolean>) => {
       state.soundAutoplay = action.payload;
+      savePreferencesToLocalStorage({ autoPlay: action.payload });
       return state;
     }
   }
